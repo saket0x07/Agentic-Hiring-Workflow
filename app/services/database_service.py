@@ -11,7 +11,6 @@ class DatabaseService:
         if db_path:
             self.db_file = Path(db_path)
         else:
-            # Extract file path from sqlite:///./database/hiring.db
             url = settings.DATABASE_URL
             clean_path = url.replace("sqlite:///", "")
             self.db_file = Path(clean_path)
@@ -20,7 +19,8 @@ class DatabaseService:
         self._init_db()
 
     def _get_connection(self) -> sqlite3.Connection:
-        conn = sqlite3.connect(str(self.db_file))
+        # Increase timeout to 30s to prevent 'database is locked' errors in concurrent environments
+        conn = sqlite3.connect(str(self.db_file), timeout=30.0, check_same_thread=False)
         conn.row_factory = sqlite3.Row
         return conn
 
@@ -28,6 +28,8 @@ class DatabaseService:
         """Initialize job_descriptions table in SQLite."""
         with self._get_connection() as conn:
             cursor = conn.cursor()
+            # Enable WAL mode for high performance concurrent reading and writing
+            cursor.execute("PRAGMA journal_mode=WAL;")
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS job_descriptions (
                     job_id TEXT PRIMARY KEY,
