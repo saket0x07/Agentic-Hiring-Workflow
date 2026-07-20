@@ -1,0 +1,32 @@
+# Core LangChain & LangGraph Orchestration
+langgraph>=0.2.0
+langchain>=0.3.0
+langchain-openai>=0.2.0
+langchain-community>=0.3.0
+langchain-core>=0.3.0
+langsmith
+
+# Data Validation & Models
+pydantic>=2.8.0
+pydantic-settings>=2.4.0
+
+# Document Processing & Tools
+pypdf>=4.3.0
+python-docx>=1.1.0
+
+# Web Frameworks & UI
+streamlit>=1.38.0
+fastapi>=0.112.0
+uvicorn>=0.30.0
+
+# Utilities
+python-dotenv>=1.0.1
+requests>=2.32.0
+structlog>=24.4.0
+
+# Testing & Linting
+pytest>=8.3.0
+black>=24.8.0
+flake8>=7.1.0
+
+loguru>=0.7.2

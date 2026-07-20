@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{ jd.job_title or jd.title or "Job Description" }}</title>
+    <style>
+        @page {
+            size: a4 portrait;
+            margin: 1.5cm 1.5cm 2cm 1.5cm;
+            @frame footer {
+                -pdf-frame-content: footerContent;
+                bottom: 0.8cm;
+                margin-left: 1.5cm;
+                margin-right: 1.5cm;
+                height: 1cm;
+            }
+        }
+
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            color: #0F172A;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        /* Top Header Banner */
+        .header-table {
+            width: 100%;
+            background-color: #0F172A;
+            color: #FFFFFF;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
+        .brand-title {
+            font-size: 11px;
+            font-weight: bold;
+            color: #38BDF8;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .header-meta {
+            text-align: right;
+            font-size: 11px;
+            color: #94A3B8;
+        }
+
+        .header-meta strong {
+            color: #F8FAFC;
+        }
+
+        /* Job Title & Summary */
+        .job-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #0F172A;
+            margin-bottom: 12px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #2563EB;
+        }
+
+        .job-summary {
+            background-color: #EFF6FF;
+            border-left: 4px solid #2563EB;
+            padding: 12px 16px;
+            font-size: 12px;
+            color: #334155;
+            margin-bottom: 20px;
+        }
+
+        /* Info Grid Table */
+        .info-table {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .info-cell {
+            width: 50%;
+            background-color: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            padding: 12px 16px;
+            vertical-align: top;
+        }
+
+        .info-label {
+            font-size: 10px;
+            font-weight: bold;
+            color: #64748B;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-size: 12px;
+            font-weight: bold;
+            color: #0F172A;
+        }
+
+        /* Section Titles */
+        .section-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #0F172A;
+            margin-top: 18px;
+            margin-bottom: 10px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid #E2E8F0;
+        }
+
+        /* Lists */
+        ul.custom-list {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        ul.custom-list li {
+            margin-bottom: 6px;
+            color: #334155;
+            font-size: 11.5px;
+        }
+
+        /* Skill Badges */
+        .badge-container {
+            margin-top: 6px;
+            margin-bottom: 14px;
+        }
+
+        .badge-must {
+            display: inline-block;
+            background-color: #EEF2FF;
+            color: #3730A3;
+            border: 1px solid #C7D2FE;
+            padding: 4px 10px;
+            margin-right: 6px;
+            margin-bottom: 6px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .badge-nice {
+            display: inline-block;
+            background-color: #ECFDF5;
+            color: #065F46;
+            border: 1px solid #A7F3D0;
+            padding: 4px 10px;
+            margin-right: 6px;
+            margin-bottom: 6px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        /* Interview Stepper Table */
+        .stepper-table {
+            width: 100%;
+            margin-top: 8px;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+        }
+
+        .step-row {
+            background-color: #FFFFFF;
+            border: 1px solid #E2E8F0;
+        }
+
+        .step-number-cell {
+            width: 36px;
+            background-color: #1E40AF;
+            color: #FFFFFF;
+            font-weight: bold;
+            font-size: 12px;
+            text-align: center;
+            vertical-align: middle;
+            padding: 8px;
+        }
+
+        .step-text-cell {
+            background-color: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-left: none;
+            padding: 10px 14px;
+            font-size: 11.5px;
+            color: #334155;
+            vertical-align: middle;
+        }
+
+        /* Footer Frame */
+        #footerContent {
+            text-align: center;
+            font-size: 10px;
+            color: #64748B;
+            border-top: 1px solid #E2E8F0;
+            padding-top: 6px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Banner -->
+    <table class="header-table">
+        <tr>
+            <td class="brand-title">AGENTIC HIRING WORKFLOW</td>
+            <td class="header-meta">
+                {% if job_id %}
+                Job ID: <strong>{{ job_id }}</strong> &nbsp;|&nbsp;
+                {% endif %}
+                {% if generated_at %}
+                Date: <strong>{{ generated_at }}</strong>
+                {% endif %}
+            </td>
+        </tr>
+    </table>
+
+    <!-- Job Title -->
+    <div class="job-title">{{ jd.job_title or jd.title or "Job Description" }}</div>
+
+    <!-- Summary -->
+    {% if jd.summary %}
+    <div class="job-summary">
+        {{ jd.summary }}
+    </div>
+    {% endif %}
+
+    <!-- Experience & Education Table -->
+    {% if jd.experience or jd.education %}
+    <table class="info-table">
+        <tr>
+            {% if jd.experience %}
+            <td class="info-cell" style="margin-right: 10px;">
+                <div class="info-label">Required Experience</div>
+                <div class="info-value">{{ jd.experience }}</div>
+            </td>
+            {% endif %}
+            {% if jd.education %}
+            <td class="info-cell">
+                <div class="info-label">Education Requirements</div>
+                <div class="info-value">{{ jd.education }}</div>
+            </td>
+            {% endif %}
+        </tr>
+    </table>
+    {% endif %}
+
+    <!-- Responsibilities -->
+    {% if jd.responsibilities %}
+    <div class="section-title">Key Responsibilities</div>
+    <ul class="custom-list">
+        {% for item in jd.responsibilities %}
+        <li>{{ item }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <!-- Must-Have Skills -->
+    {% if jd.must_have_skills %}
+    <div class="section-title">Must-Have Skills</div>
+    <div class="badge-container">
+        {% for skill in jd.must_have_skills %}
+        <span class="badge-must">{{ skill }}</span>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Nice-to-Have Skills -->
+    {% if jd.nice_to_have_skills %}
+    <div class="section-title">Nice-to-Have Skills</div>
+    <div class="badge-container">
+        {% for skill in jd.nice_to_have_skills %}
+        <span class="badge-nice">{{ skill }}</span>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Interview Process -->
+    {% if jd.interview_rounds %}
+    <div class="section-title">Interview Process</div>
+    <table class="stepper-table">
+        {% for round in jd.interview_rounds %}
+        <tr class="step-row">
+            <td class="step-number-cell">{{ loop.index }}</td>
+            <td class="step-text-cell">
+                {% if round is mapping %}
+                    <strong>{{ round.round or round.name or round.title }}</strong>
+                    {% if round.description %}: {{ round.description }}{% endif %}
+                {% else %}
+                    {{ round }}
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+
+    <!-- Footer Content for @frame -->
+    <div id="footerContent">
+        Generated automatically by Agentic Hiring Workflow System
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,41 @@
+from fastapi import FastAPI
+
+from app.core.settings import settings
+from app.core.logger import logger
+from app.api.routes.jobs import router as jobs_router
+
+
+app = FastAPI(
+    title=settings.APP_NAME,
+    version=settings.APP_VERSION,
+    debug=settings.DEBUG,
+)
+app.include_router(jobs_router)
+@app.get("/")
+async def root():
+    """ROOT ENDPOINTS"""
+    logger.info("Root endpoint accessed")
+    return {
+        "message": f"Welcome to {settings.APP_NAME}",
+        "version": settings.APP_VERSION,
+    }
+
+@app.get("/health")
+async def health():
+    """Health check endpoint"""
+    return {
+        "status": "healthy",
+        "environment": settings.ENV,
+    }
+
+@app.get("/version")
+async def version():
+    """Application version endpoint"""
+    return {
+        "app_name": settings.APP_NAME,
+        "version": settings.APP_VERSION,
+    }
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("app.api.main:app", host=settings.HOST, port=settings.PORT, reload=settings.DEBUG)
