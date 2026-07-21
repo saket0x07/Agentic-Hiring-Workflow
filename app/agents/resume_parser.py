@@ -1,4 +1,5 @@
 import json
+from json_repair import repair_json
 
 from app.prompts.resume_parsing import RESUME_PARSING_SYSTEM_PROMPT, build_resume_parsing_prompt
 from app.schemas.candidate_profile import CandidateProfile
@@ -30,16 +31,10 @@ class ResumeParserAgent:
 
         try:
             parsed_json = json.loads(clean_response, strict=False)
-        except json.JSONDecodeError:
-            import re
+        except Exception:
+            repaired_str = repair_json(clean_response)
+            parsed_json = json.loads(repaired_str, strict=False)
 
-            fixed = re.sub(r",\s*([}\]])", r"\1", clean_response)
-            try:
-                parsed_json = json.loads(fixed, strict=False)
-            except json.JSONDecodeError:
-                if not fixed.endswith("}"):
-                    fixed += "}"
-                parsed_json = json.loads(fixed, strict=False)
         parsed_json["raw_text"] = resume_text
 
         return CandidateProfile.model_validate(parsed_json)

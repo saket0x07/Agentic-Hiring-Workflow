@@ -1,6 +1,8 @@
 import json
 from typing import Optional
 
+from json_repair import repair_json
+
 from app.core.logger import logger
 from app.prompts.jd_generation import JD_GENERATION_SYSTEM_PROMPT, build_jd_prompt
 from app.schemas.job_description import JobDescription
@@ -30,7 +32,11 @@ class JDGenerationAgent:
         else:
             clean_response = response.strip()
 
-        data = json.loads(clean_response, strict=False)
+        try:
+            data = json.loads(clean_response, strict=False)
+        except Exception:
+            repaired_str = repair_json(clean_response)
+            data = json.loads(repaired_str, strict=False)
 
         jd = JobDescription.model_validate(data)
         return jd

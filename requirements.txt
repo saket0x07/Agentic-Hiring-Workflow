@@ -29,6 +29,7 @@ sentence-transformers>=3.0.0
 python-dotenv>=1.0.1
 requests>=2.32.0
 structlog>=24.4.0
+json-repair>=0.30.0
 
 # Testing & Linting
 pytest>=8.3.0
