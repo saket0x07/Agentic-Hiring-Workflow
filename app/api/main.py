@@ -3,6 +3,8 @@ from fastapi import FastAPI
 from app.core.settings import settings
 from app.core.logger import logger
 from app.api.routes.jobs import router as jobs_router
+from app.api.routes.resumes import router as resumes_router
+
 
 
 app = FastAPI(
@@ -11,6 +13,8 @@ app = FastAPI(
     debug=settings.DEBUG,
 )
 app.include_router(jobs_router)
+app.include_router(resumes_router)
+
 @app.get("/")
 async def root():
     """ROOT ENDPOINTS"""

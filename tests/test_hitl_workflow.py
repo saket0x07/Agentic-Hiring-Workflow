@@ -1,10 +1,12 @@
 import asyncio
 import os
 from pathlib import Path
+import pytest
 from app.services.database_service import DatabaseService
 from app.services.pdf_service import PDFService
 from app.agents.jd_generator import JDGenerationAgent
 
+@pytest.mark.asyncio
 async def test_hitl_flow():
     job_id = "TEST-HITL-999"
     hiring_request = {
