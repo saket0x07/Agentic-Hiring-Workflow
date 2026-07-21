@@ -50,6 +50,8 @@ data/resumes/*
 !data/resumes/.gitkeep
 data/outputs/*
 !data/outputs/.gitkeep
+data/vector_store/*
+!data/vector_store/.gitkeep
 
 # Testing & Coverage
 .pytest_cache/

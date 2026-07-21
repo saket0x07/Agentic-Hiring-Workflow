@@ -1,25 +1,20 @@
-from app.services.resume_extractor import ResumeExtractor
 import shutil
 import uuid
 from pathlib import Path
 
-
 from fastapi import APIRouter, File, HTTPException, UploadFile
-from app.agents.resume_parser import ResumeParserAgent
-from app.services.resume_service import ResumeService
+from app.graph.resume_state import ResumeState
+from app.graph.resume_workflow import resume_workflow
 
 router = APIRouter(prefix="/resumes", tags=["Resumes"])
 
 UPLOAD_DIRECTORY = Path("data/resumes")
 UPLOAD_DIRECTORY.mkdir(parents=True, exist_ok=True)
 
-resume_service = ResumeService()
-resume_parser = ResumeParserAgent()
 
 @router.post("/upload")
-async def upload_resume(
-    file: UploadFile = File(...)):
-    """UPLOAD AND PARSE A RESUME """
+async def upload_resume(file: UploadFile = File(...)):
+    """UPLOAD, PARSE, STORE, EMBED, AND INDEX A RESUME VIA LANGGRAPH WORKFLOW"""
     extension = Path(file.filename).suffix.lower()
     if extension not in [".pdf", ".docx"]:
         raise HTTPException(status_code=400, detail="Invalid file type")
@@ -29,21 +24,23 @@ async def upload_resume(
 
     with saved_file.open("wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
-    
-    try:
-        raw_text = ResumeExtractor.extract_text(saved_file)
-        candidate_profile = await resume_parser.parse(raw_text)
 
-        resume_service.save_resume(resume_id=resume_id, profile=candidate_profile, file_path=str(saved_file))
-        
+    try:
+        initial_state = ResumeState(
+            resume_id=resume_id,
+            file_path=saved_file,
+        )
+        final_state = await resume_workflow.ainvoke(initial_state)
+
+        profile = final_state.get("candidate_profile")
+        profile_data = profile.model_dump() if profile and hasattr(profile, "model_dump") else profile
+
         return {
-            "message": "Resume uploaded successfully",
+            "message": "Resume uploaded and indexed successfully",
             "resume_id": resume_id,
-            "candidate_profile": candidate_profile.model_dump()
+            "status": final_state.get("status", "INDEXED"),
+            "candidate_profile": profile_data,
         }
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-    
-    
-    

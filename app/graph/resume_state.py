@@ -16,5 +16,5 @@ class ResumeState(BaseModel):
     candidate_profile: Optional[CandidateProfile] = None
     status: str = "UPLOADED"
     error: Optional[str]=None
+    embedding: Optional[list[float]]=None
 
-    
