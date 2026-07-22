@@ -50,6 +50,14 @@ async def create_job(request: HiringRequest):
         "pdf_path": None
     }
 
+@router.get("/")
+async def list_all_jobs():
+    """
+    Get list of all Job Descriptions from database.
+    """
+    db = DatabaseService()
+    return db.list_jobs()
+
 @router.get("/{job_id}")
 async def get_job(job_id: str):
     """

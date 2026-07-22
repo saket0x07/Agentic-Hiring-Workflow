@@ -88,6 +88,19 @@ class ResumeService:
         conn.close()
         return dict(row) if row else None
 
+    def _get_resume_by_id(self,resume_id: str):
+        conn = self._get_connection()
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute("SELECT candidate_profile FROM resumes WHERE resume_id=?", (resume_id,))
+        row = cursor.fetchone()
+        conn.close()
+        if not row:
+            return None
+        
+        return CandidateProfile.model_validate_json(row[0])
+
+
     def list_resumes(self):
         conn = self._get_connection()
         conn.row_factory = sqlite3.Row

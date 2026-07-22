@@ -4,6 +4,7 @@ from app.core.settings import settings
 from app.core.logger import logger
 from app.api.routes.jobs import router as jobs_router
 from app.api.routes.resumes import router as resumes_router
+from app.api.routes.retrieval import router as retrieval_router
 
 
 
@@ -14,6 +15,7 @@ app = FastAPI(
 )
 app.include_router(jobs_router)
 app.include_router(resumes_router)
+app.include_router(retrieval_router)
 
 @app.get("/")
 async def root():

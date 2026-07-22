@@ -120,3 +120,23 @@ class DatabaseService:
 
         logger.info(f"Job {job_id} re-generated and updated after rejection (retry_count={new_retry_count}).")
         return self.get_job(job_id)
+
+    def list_jobs(self) -> list:
+        """Retrieve all job records."""
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM job_descriptions ORDER BY updated_at DESC")
+            rows = cursor.fetchall()
+            jobs = []
+            for row in rows:
+                job_dict = dict(row)
+                try:
+                    job_dict["hiring_request"] = json.loads(job_dict["hiring_request"])
+                except Exception:
+                    pass
+                try:
+                    job_dict["generated_jd"] = json.loads(job_dict["generated_jd"])
+                except Exception:
+                    pass
+                jobs.append(job_dict)
+            return jobs
