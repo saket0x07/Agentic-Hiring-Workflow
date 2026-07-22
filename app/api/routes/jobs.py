@@ -50,6 +50,7 @@ async def create_job(request: HiringRequest):
         "pdf_path": None
     }
 
+@router.get("")
 @router.get("/")
 async def list_all_jobs():
     """

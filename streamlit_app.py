@@ -15,11 +15,20 @@ st.set_page_config(
 DEFAULT_API_URL = "http://127.0.0.1:8000"
 
 def fetch_all_jobs(url: str):
-    """Fetch list of all jobs from backend API."""
+    """Fetch list of all jobs from backend API, with fallback to DatabaseService."""
+    for path in ["/jobs/", "/jobs"]:
+        try:
+            res = requests.get(f"{url}{path}", timeout=5, allow_redirects=True)
+            if res.status_code == 200:
+                jobs = res.json()
+                if jobs:
+                    return jobs
+        except Exception:
+            pass
+    # Fallback to direct DB query if API endpoint is busy or reloaded
     try:
-        res = requests.get(f"{url}/jobs/", timeout=5)
-        if res.status_code == 200:
-            return res.json()
+        from app.services.database_service import DatabaseService
+        return DatabaseService().list_jobs()
     except Exception:
         pass
     return []
@@ -304,8 +313,13 @@ elif selected_page == "📂 Resume Pool":
 # 🎯 PAGE 3: Candidate Fetch
 # ----------------------------------------------------
 elif selected_page == "🎯 Candidate Fetch":
-    st.header("Candidate Fetch & Cross-Encoder Ranking")
-    st.markdown("Select a Job Description by Name to fetch and rerank top matching candidates from the Resume Pool using FAISS vector search, Cross-Encoder reranking, and LangGraph workflow.")
+    st.header("Hybrid Candidate Fetch & Reranking (BM25 + FAISS Vector + Cross-Encoder)")
+    col_hdr, col_ref = st.columns([4, 1])
+    with col_hdr:
+        st.markdown("Select a Job Description by Name to fetch and rerank top matching candidates using **BM25 Keyword Search**, **FAISS Vector Search**, **Reciprocal Rank Fusion (RRF)**, and **Cross-Encoder Reranking**.")
+    with col_ref:
+        if st.button("🔄 Refresh Jobs", key="btn_refresh_jobs_tab3"):
+            st.rerun()
 
     all_jobs_tab3 = fetch_all_jobs(api_url)
 
@@ -336,7 +350,7 @@ elif selected_page == "🎯 Candidate Fetch":
             if not target_job_id:
                 st.error("Please select a Job Description!")
             else:
-                with st.spinner(f"Fetching & Cross-Encoder Reranking top {top_k_val} candidates for '{selected_jd_name}'..."):
+                with st.spinner(f"Running Hybrid Search (BM25 + FAISS Vector + Cross-Encoder) for '{selected_jd_name}'..."):
                     try:
                         res = requests.post(f"{api_url}/retrieval/{target_job_id}?top_k={top_k_val}")
                         if res.status_code == 200:
@@ -344,7 +358,7 @@ elif selected_page == "🎯 Candidate Fetch":
                             candidates = retrieval_data.get("candidates", [])
                             total_cand = retrieval_data.get("total_candidates", 0)
 
-                            st.success(f"Successfully fetched & reranked {total_cand} candidates!")
+                            st.success(f"Successfully fetched & reranked {total_cand} candidates using Hybrid BM25 + Vector Search!")
 
                             if not candidates:
                                 st.info("No candidates found in vector index matching this job. Upload resumes in '📂 Resume Pool' first!")
@@ -352,6 +366,9 @@ elif selected_page == "🎯 Candidate Fetch":
                                 for idx, cand in enumerate(candidates, 1):
                                     sim_score = cand.get("similarity_score", 0.0)
                                     rerank_score = cand.get("rerank_score", 0.0)
+                                    rrf_score = cand.get("rrf_score", 0.0)
+                                    bm25_rank = cand.get("bm25_rank", 0)
+                                    vector_rank = cand.get("vector_rank", 0)
                                     profile = cand.get("profile") or {}
                                     resume_id = cand.get("resume_id")
 
@@ -363,8 +380,16 @@ elif selected_page == "🎯 Candidate Fetch":
                                     summary = profile.get("professional_summary", "No summary provided.")
 
                                     with st.container():
-                                        st.markdown(f"### #{idx}. {name} — Vector Score: **{sim_score:.1f}%** | Re-rank Score: **{rerank_score:.2f}**")
+                                        st.markdown(f"### #{idx}. {name} — Rerank Score: **{rerank_score:.2f}** | Hybrid RRF: **{rrf_score:.4f}**")
                                         st.progress(min(max(float(sim_score) / 100.0, 0.0), 1.0))
+
+                                        c_m1, c_m2, c_m3 = st.columns(3)
+                                        with c_m1:
+                                            st.markdown(f"🔤 **BM25 Keyword Rank:** `#{bm25_rank}`")
+                                        with c_m2:
+                                            st.markdown(f"📐 **FAISS Vector Rank:** `#{vector_rank}`")
+                                        with c_m3:
+                                            st.markdown(f"⚡ **Vector Similarity:** `{sim_score:.1f}%`")
 
                                         st.markdown(f"**Resume ID:** `{resume_id}` | **Email:** `{email}` | **Phone:** `{phone}`")
                                         st.markdown(f"**Summary:** {summary}")

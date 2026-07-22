@@ -19,7 +19,7 @@ def retrieve_candidates(
     top_k: int = 5
 ):
     """
-    Retrieve top matching candidates for a Job Description.
+    Retrieve top matching candidates for a Job Description using Hybrid Search (BM25 + FAISS Vector + RRF + Reranker).
     """
 
     job = job_service.get_job(job_id)
@@ -51,12 +51,17 @@ def retrieve_candidates(
         candidates_list.append({
             "resume_id": candidate["resume_id"],
             "similarity_score": round(candidate.get("similarity_score", 0.0) * 100, 2),
+            "rrf_score": round(candidate.get("rrf_score", 0.0), 4),
+            "bm25_score": round(candidate.get("bm25_score", 0.0), 2),
+            "bm25_rank": candidate.get("bm25_rank", 0),
+            "vector_rank": candidate.get("vector_rank", 0),
             "rerank_score": round(candidate.get("rerank_score", 0.0), 2),
             "profile": profile_data
         })
 
     return {
         "job_id": job_id,
+        "search_type": "Hybrid (BM25 + FAISS Vector + RRF + Cross-Encoder)",
         "total_candidates": len(candidates_list),
         "candidates": candidates_list
     }
