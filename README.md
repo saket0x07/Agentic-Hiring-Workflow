@@ -93,17 +93,17 @@ flowchart TD
 
 ## 💻 Tech Stack
 
-| Component | Technology / Library | Purpose |
-| :--- | :--- | :--- |
-| **Backend Core** | FastAPI, Uvicorn, Pydantic v2 | High-performance async REST API framework & schema validation |
-| **LLM Orchestration** | LangGraph, LangChain, OpenRouter API | Agentic stateful graph workflows & LLM prompt execution |
-| **Vector Indexing** | FAISS (`faiss-cpu`), NumPy | Fast dense vector similarity search across 768 dimensions |
-| **Dense Embeddings** | `BAAI/bge-base-en-v1.5` | Dense vector embedding model for deep conceptual semantics |
-| **Lexical Search** | `rank-bm25` | Sparse keyword search engine for exact technical skill matching |
-| **Cross-Encoder** | `sentence-transformers` (`ms-marco-MiniLM-L-6-v2`) | Deep query-document cross-attention re-ranking |
-| **PDF Generation** | WeasyPrint, Jinja2 | HTML/CSS to PDF compilation for job description exports |
-| **Relational DB** | SQLite, SQLAlchemy | Relational persistence for jobs, resumes, and candidate profiles |
-| **Frontend UI** | Streamlit, Custom HTML5/CSS3, Material Symbols | Reactive web application dashboard with modern UI aesthetics |
+| Component             | Technology / Library                               | Purpose                                                          |
+| :-------------------- | :------------------------------------------------- | :--------------------------------------------------------------- |
+| **Backend Core**      | FastAPI, Uvicorn, Pydantic v2                      | High-performance async REST API framework & schema validation    |
+| **LLM Orchestration** | LangGraph, LangChain, OpenRouter API               | Agentic stateful graph workflows & LLM prompt execution          |
+| **Vector Indexing**   | FAISS (`faiss-cpu`), NumPy                         | Fast dense vector similarity search across 768 dimensions        |
+| **Dense Embeddings**  | `BAAI/bge-base-en-v1.5`                            | Dense vector embedding model for deep conceptual semantics       |
+| **Lexical Search**    | `rank-bm25`                                        | Sparse keyword search engine for exact technical skill matching  |
+| **Cross-Encoder**     | `sentence-transformers` (`ms-marco-MiniLM-L-6-v2`) | Deep query-document cross-attention re-ranking                   |
+| **PDF Generation**    | WeasyPrint, Jinja2                                 | HTML/CSS to PDF compilation for job description exports          |
+| **Relational DB**     | SQLite, SQLAlchemy                                 | Relational persistence for jobs, resumes, and candidate profiles |
+| **Frontend UI**       | Streamlit, Custom HTML5/CSS3, Material Symbols     | Reactive web application dashboard with modern UI aesthetics     |
 
 ---
 
@@ -169,17 +169,17 @@ Open your browser at `http://localhost:8501`.
 
 ## 📡 API Endpoint Reference
 
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `GET` | `/health` | Server health check and active environment status |
-| `GET` | `/jobs/` | Retrieve all hiring requests and job descriptions |
-| `POST` | `/jobs/create` | Trigger AI agent to generate a new Job Description |
-| `GET` | `/jobs/{job_id}` | Retrieve specific job details and current state |
-| `POST` | `/jobs/{job_id}/approve` | Approve JD and build exportable PDF document |
-| `POST` | `/jobs/{job_id}/reject` | Submit revision feedback notes and regenerate JD |
-| `POST` | `/resumes/upload` | Upload resume (`.pdf`, `.docx`, `.txt`), parse & index vector |
-| `GET` | `/resumes/` | Retrieve list of all candidate resumes in candidate pool |
-| `POST` | `/retrieval/{job_id}` | Execute Hybrid Retrieval (BM25 + FAISS + RRF + Cross-Encoder) |
+| Method | Endpoint                 | Description                                                   |
+| :----- | :----------------------- | :------------------------------------------------------------ |
+| `GET`  | `/health`                | Server health check and active environment status             |
+| `GET`  | `/jobs/`                 | Retrieve all hiring requests and job descriptions             |
+| `POST` | `/jobs/create`           | Trigger AI agent to generate a new Job Description            |
+| `GET`  | `/jobs/{job_id}`         | Retrieve specific job details and current state               |
+| `POST` | `/jobs/{job_id}/approve` | Approve JD and build exportable PDF document                  |
+| `POST` | `/jobs/{job_id}/reject`  | Submit revision feedback notes and regenerate JD              |
+| `POST` | `/resumes/upload`        | Upload resume (`.pdf`, `.docx`, `.txt`), parse & index vector |
+| `GET`  | `/resumes/`              | Retrieve list of all candidate resumes in candidate pool      |
+| `POST` | `/retrieval/{job_id}`    | Execute Hybrid Retrieval (BM25 + FAISS + RRF + Cross-Encoder) |
 
 ---
 
@@ -226,6 +226,6 @@ python -m py_compile streamlit_app.py app/api/main.py
 
 ---
 
-## ✨ Author & Acknowledgments
+## Author & Acknowledgments
 
 Developed with ❤️ by **[saket0x07](https://github.com/saket0x07)** for advanced agentic AI recruitment workflows.
