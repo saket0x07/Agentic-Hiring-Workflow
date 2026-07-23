@@ -22,6 +22,7 @@ class ResumeParserAgent:
             user_prompt=user_prompt,
         )
 
+        response = response or ""
         start_idx = response.find("{")
         end_idx = response.rfind("}")
         if start_idx != -1 and end_idx != -1:

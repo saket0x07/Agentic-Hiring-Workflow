@@ -27,7 +27,7 @@ async def test_resume_workflow_execution():
     assert final_state["raw_text"] is not None
     assert final_state["candidate_profile"] is not None
     assert final_state["embedding"] is not None
-    assert len(final_state["embedding"]) == 384
+    assert len(final_state["embedding"]) == 768
 
 
 if __name__ == "__main__":

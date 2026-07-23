@@ -38,5 +38,12 @@ class JDGenerationAgent:
             repaired_str = repair_json(clean_response)
             data = json.loads(repaired_str, strict=False)
 
+        # Ensure list fields are lists of strings if LLM returns a single string
+        for list_field in ["responsibilities", "must_have_skills", "nice_to_have_skills", "interview_rounds"]:
+            val = data.get(list_field)
+            if isinstance(val, str):
+                parsed_items = [line.lstrip("-*• 1234567890.").strip() for line in val.splitlines() if line.strip()]
+                data[list_field] = parsed_items if parsed_items else [val.strip()]
+
         jd = JobDescription.model_validate(data)
         return jd

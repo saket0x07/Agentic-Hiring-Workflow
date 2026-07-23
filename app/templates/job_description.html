@@ -6,21 +6,21 @@
     <style>
         @page {
             size: a4 portrait;
-            margin: 1.5cm 1.5cm 2cm 1.5cm;
+            margin: 0.8cm 1.2cm 1.2cm 1.2cm;
             @frame footer {
                 -pdf-frame-content: footerContent;
-                bottom: 0.8cm;
-                margin-left: 1.5cm;
-                margin-right: 1.5cm;
-                height: 1cm;
+                bottom: 0.5cm;
+                margin-left: 1.2cm;
+                margin-right: 1.2cm;
+                height: 0.8cm;
             }
         }
 
         body {
             font-family: Helvetica, Arial, sans-serif;
             color: #0F172A;
-            font-size: 12px;
-            line-height: 1.5;
+            font-size: 10px;
+            line-height: 1.35;
         }
 
         /* Top Header Banner */
@@ -28,13 +28,13 @@
             width: 100%;
             background-color: #0F172A;
             color: #FFFFFF;
-            padding: 16px 20px;
-            margin-bottom: 20px;
-            border-radius: 8px;
+            padding: 10px 14px;
+            margin-bottom: 10px;
+            border-radius: 6px;
         }
 
         .brand-title {
-            font-size: 11px;
+            font-size: 10px;
             font-weight: bold;
             color: #38BDF8;
             letter-spacing: 1px;
@@ -43,7 +43,7 @@
 
         .header-meta {
             text-align: right;
-            font-size: 11px;
+            font-size: 10px;
             color: #94A3B8;
         }
 
@@ -53,78 +53,84 @@
 
         /* Job Title & Summary */
         .job-title {
-            font-size: 22px;
+            font-size: 17px;
             font-weight: bold;
             color: #0F172A;
-            margin-bottom: 12px;
-            padding-bottom: 6px;
+            margin-bottom: 8px;
+            padding-bottom: 4px;
             border-bottom: 2px solid #2563EB;
         }
 
         .job-summary {
             background-color: #EFF6FF;
-            border-left: 4px solid #2563EB;
-            padding: 12px 16px;
-            font-size: 12px;
+            border-left: 3px solid #2563EB;
+            padding: 8px 12px;
+            font-size: 10px;
             color: #334155;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
+            page-break-inside: avoid;
         }
 
         /* Info Grid Table */
         .info-table {
             width: 100%;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
+            page-break-inside: avoid;
         }
 
         .info-cell {
             width: 50%;
             background-color: #F8FAFC;
             border: 1px solid #E2E8F0;
-            padding: 12px 16px;
+            padding: 6px 10px;
             vertical-align: top;
         }
 
         .info-label {
-            font-size: 10px;
+            font-size: 9px;
             font-weight: bold;
             color: #64748B;
             text-transform: uppercase;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
 
         .info-value {
-            font-size: 12px;
+            font-size: 10.5px;
             font-weight: bold;
             color: #0F172A;
         }
 
         /* Section Titles */
         .section-title {
-            font-size: 14px;
+            font-size: 11px;
             font-weight: bold;
             color: #0F172A;
-            margin-top: 18px;
-            margin-bottom: 10px;
-            padding-bottom: 4px;
+            margin-top: 10px;
+            margin-bottom: 4px;
+            padding-bottom: 2px;
             border-bottom: 1px solid #E2E8F0;
+            page-break-inside: avoid;
         }
 
         /* Lists */
         ul.custom-list {
             margin: 0;
-            padding-left: 18px;
+            padding-left: 16px;
+            margin-bottom: 6px;
+            page-break-inside: avoid;
         }
 
         ul.custom-list li {
-            margin-bottom: 6px;
+            margin-bottom: 3px;
             color: #334155;
-            font-size: 11.5px;
+            font-size: 9.5px;
         }
 
         /* Skill Badges */
         .badge-container {
-            margin-top: 6px;
-            margin-bottom: 14px;
+            margin-top: 4px;
+            margin-bottom: 8px;
+            page-break-inside: avoid;
         }
 
         .badge-must {
@@ -132,11 +138,11 @@
             background-color: #EEF2FF;
             color: #3730A3;
             border: 1px solid #C7D2FE;
-            padding: 4px 10px;
-            margin-right: 6px;
-            margin-bottom: 6px;
-            border-radius: 12px;
-            font-size: 11px;
+            padding: 3px 8px;
+            margin-right: 4px;
+            margin-bottom: 4px;
+            border-radius: 10px;
+            font-size: 9.5px;
             font-weight: bold;
         }
 
@@ -145,20 +151,22 @@
             background-color: #ECFDF5;
             color: #065F46;
             border: 1px solid #A7F3D0;
-            padding: 4px 10px;
-            margin-right: 6px;
-            margin-bottom: 6px;
-            border-radius: 12px;
-            font-size: 11px;
+            padding: 3px 8px;
+            margin-right: 4px;
+            margin-bottom: 4px;
+            border-radius: 10px;
+            font-size: 9.5px;
             font-weight: bold;
         }
 
         /* Interview Stepper Table */
         .stepper-table {
             width: 100%;
-            margin-top: 8px;
+            margin-top: 4px;
+            margin-bottom: 6px;
             border-collapse: separate;
-            border-spacing: 0 8px;
+            border-spacing: 0 4px;
+            page-break-inside: avoid;
         }
 
         .step-row {
@@ -167,22 +175,22 @@
         }
 
         .step-number-cell {
-            width: 36px;
+            width: 28px;
             background-color: #1E40AF;
             color: #FFFFFF;
             font-weight: bold;
-            font-size: 12px;
+            font-size: 10px;
             text-align: center;
             vertical-align: middle;
-            padding: 8px;
+            padding: 5px;
         }
 
         .step-text-cell {
             background-color: #F8FAFC;
             border: 1px solid #E2E8F0;
             border-left: none;
-            padding: 10px 14px;
-            font-size: 11.5px;
+            padding: 6px 10px;
+            font-size: 9.5px;
             color: #334155;
             vertical-align: middle;
         }
@@ -190,10 +198,10 @@
         /* Footer Frame */
         #footerContent {
             text-align: center;
-            font-size: 10px;
+            font-size: 9px;
             color: #64748B;
             border-top: 1px solid #E2E8F0;
-            padding-top: 6px;
+            padding-top: 4px;
         }
     </style>
 </head>

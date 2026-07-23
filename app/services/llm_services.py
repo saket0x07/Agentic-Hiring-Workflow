@@ -1,4 +1,5 @@
 from openai import AsyncOpenAI
+from langsmith import traceable
 from app.core.settings import settings
 
 class LLMService:
@@ -9,6 +10,7 @@ class LLMService:
         )
         self.model = settings.MODEL_NAME
 
+    @traceable(name="LLM Generation", run_type="llm")
     async def generate(self, system_prompt: str, user_prompt: str) -> str:
         response = await self.client.chat.completions.create(
             model=self.model,
@@ -18,4 +20,4 @@ class LLMService:
             ],
             temperature=0.2,
         )
-        return response.choices[0].message.content
+        return response.choices[0].message.content or ""

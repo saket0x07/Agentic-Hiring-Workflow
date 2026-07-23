@@ -19,7 +19,11 @@ class RerankerService:
         for candidate, score in zip(candidates, scores):
             candidate["rerank_score"] = float(score)
 
-        candidates.sort(key=lambda x: x.get("rerank_score", 0.0), reverse=True)
+        # Sort primarily by Hybrid RRF rank score (BM25 + FAISS), using Cross-Encoder score as secondary ranker
+        candidates.sort(
+            key=lambda x: (x.get("rrf_score", 0.0), x.get("rerank_score", 0.0)),
+            reverse=True
+        )
         return candidates
 
     def _build_resume_text(self, profile):
@@ -37,6 +41,10 @@ class RerankerService:
         summary = get_val(profile, "professional_summary")
         if summary:
             sections.append(str(summary))
+        else:
+            raw = get_val(profile, "raw_text")
+            if raw:
+                sections.append(str(raw)[:600])
 
         skills = get_val(profile, "technical_skills")
         if skills:
@@ -56,7 +64,19 @@ class RerankerService:
         if exps and isinstance(exps, list):
             for exp in exps:
                 title = get_val(exp, "job_title") or get_val(exp, "designation") or ""
-                if title:
-                    sections.append(str(title))
+                company = get_val(exp, "company") or ""
+                if title or company:
+                    sections.append(f"{title} at {company}".strip())
+                resps = get_val(exp, "responsibilities")
+                if resps:
+                    if isinstance(resps, list):
+                        sections.extend([str(r) for r in resps if r])
+                    else:
+                        sections.append(str(resps))
 
-        return "\n".join(sections)
+        if not sections:
+            raw = get_val(profile, "raw_text")
+            if raw:
+                sections.append(str(raw)[:1000])
+
+        return "\n".join([s for s in sections if s])

@@ -15,7 +15,7 @@ from app.services.resume_extractor import ResumeExtractor
 
 @pytest.mark.asyncio
 async def test_resume_parser():
-    raw_text = ResumeExtractor.extract_text("data/resumes/saloni resume.pdf")
+    raw_text = ResumeExtractor.extract_text("data/resumes/Saket-Resume.pdf")
     agent = ResumeParserAgent()
     profile = await agent.parse(raw_text)
 

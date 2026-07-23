@@ -63,6 +63,10 @@ class ResumeExtractor:
         Basic text Normalization
         More Advance processing will be handled by the resume parsing agent
         """
+        dash_variants = ["\u2011", "\u2013", "\u2014", "\u2010", "\u2012", "\u2015", "\u00ad", "\ufe63", "\uff0d", "\u25a0"]
+        for d in dash_variants:
+            text = text.replace(d, "-")
+
         lines = []
         for line in text.splitlines():
             cleaned = " ".join(line.split())

@@ -116,3 +116,11 @@ class ResumeService:
         cursor.execute("DELETE FROM resumes WHERE resume_id=?", (resume_id,))
         conn.commit()
         conn.close()
+
+    def clear_all_resumes(self):
+        """Delete all resume records from SQLite database."""
+        conn = self._get_connection()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM resumes")
+        conn.commit()
+        conn.close()

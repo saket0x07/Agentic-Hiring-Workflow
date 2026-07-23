@@ -6,10 +6,15 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 from app.services.resume_extractor import ResumeExtractor
 
 
-if sys.stdout.encoding.lower() != "utf-8":
-    sys.stdout.reconfigure(encoding="utf-8")
+def test_resume_extraction():
+    resume_path = "data/resumes/Saket-Resume.pdf"
+    raw_text = ResumeExtractor.extract_text(resume_path)
+    assert len(raw_text) > 0
+    print(f"Extracted {len(raw_text)} characters.")
 
-raw_text = ResumeExtractor.extract_text("data/resumes/saloni resume.pdf")
-print(f"Extracted {len(raw_text)} characters.")
-print(raw_text[:500])
+
+if __name__ == "__main__":
+    if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
+        sys.stdout.reconfigure(encoding="utf-8")
+    test_resume_extraction()
 

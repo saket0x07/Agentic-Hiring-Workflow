@@ -12,7 +12,7 @@ class VectorStore:
 
     def __init__(
         self,
-        dimension: int = 384,
+        dimension: int = 768,
         index_path: str = "./data/vector_store/resume.index",
         mapping_path: str = "./data/vector_store/resume_mapping.json",
     ):
@@ -28,7 +28,12 @@ class VectorStore:
 
     def _load_or_create_index(self):
         if self.index_path.exists():
-            return faiss.read_index(str(self.index_path))
+            idx = faiss.read_index(str(self.index_path))
+            if idx.d == self.dimension:
+                return idx
+            # Index dimension mismatch - recreate index with new dimension
+            if self.mapping_path.exists():
+                self.mapping_path.unlink(missing_ok=True)
         return faiss.IndexFlatIP(self.dimension)
 
     def _load_mapping(self):
@@ -42,6 +47,16 @@ class VectorStore:
         with open(self.mapping_path, "w", encoding="utf-8") as f:
             json.dump(self.mapping, f, indent=4)
 
+    def clear_index(self):
+        """Clear all stored vectors and mapping files."""
+        self.index = faiss.IndexFlatIP(self.dimension)
+        self.mapping = []
+        if self.index_path.exists():
+            self.index_path.unlink(missing_ok=True)
+        if self.mapping_path.exists():
+            self.mapping_path.unlink(missing_ok=True)
+        self._save()
+
     def add_resume(self, resume_id: str, embedding: list[float]):
         vector = np.array([embedding], dtype="float32")
         self.index.add(vector)
@@ -49,11 +64,13 @@ class VectorStore:
         self._save()
 
     def search(self, embedding: list[float], top_k: int = 10):
+        if self.index.ntotal == 0:
+            return []
         vector = np.array([embedding], dtype="float32")
         scores, indices = self.index.search(vector, top_k)
         results = []
         for idx, score in zip(indices[0], scores[0]):
-            if idx == -1:
+            if idx == -1 or idx >= len(self.mapping):
                 continue
             results.append({"resume_id": self.mapping[idx]["id"], "score": float(score)})
         return results
