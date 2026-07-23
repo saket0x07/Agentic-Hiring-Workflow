@@ -5,7 +5,6 @@
 [![LangChain](https://img.shields.io/badge/LangChain/LangGraph-0.1.0+-1C3C3C.svg?style=flat)](https://www.langchain.com/)
 [![FAISS](https://img.shields.io/badge/FAISS-Dense%20Vectors-0467DF.svg?style=flat)](https://github.com/facebookresearch/faiss)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg?style=flat&logo=python)](https://www.python.org/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg?style=flat)](LICENSE)
 
 An end-to-end, production-grade **Agentic AI Technical Hiring Workflow**. Built with **FastAPI**, **LangGraph / LangChain**, **FAISS Dense Vector Store**, **BM25 Lexical Retrieval**, **Cross-Encoder Re-ranking**, and an ultra-modern **Streamlit UI**. 
 
@@ -224,12 +223,6 @@ Verify Python syntax and imports across backend and frontend:
 ```bash
 python -m py_compile streamlit_app.py app/api/main.py
 ```
-
----
-
-## 📜 License
-
-Distributed under the **MIT License**. See `LICENSE` for more information.
 
 ---
 
