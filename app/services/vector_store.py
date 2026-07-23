@@ -57,6 +57,31 @@ class VectorStore:
             self.mapping_path.unlink(missing_ok=True)
         self._save()
 
+    def delete_resume(self, resume_id: str):
+        """Delete a resume by ID from FAISS index and mapping file."""
+        if not self.mapping:
+            return
+            
+        remaining_mappings = []
+        remaining_vectors = []
+        
+        for i, item in enumerate(self.mapping):
+            if item.get("id") != resume_id:
+                remaining_mappings.append(item)
+                if i < self.index.ntotal:
+                    vec = self.index.reconstruct(i)
+                    remaining_vectors.append(vec)
+                    
+        # Re-create index
+        self.index = faiss.IndexFlatIP(self.dimension)
+        self.mapping = remaining_mappings
+        
+        if remaining_vectors:
+            matrix = np.array(remaining_vectors, dtype="float32")
+            self.index.add(matrix)
+            
+        self._save()
+
     def add_resume(self, resume_id: str, embedding: list[float]):
         vector = np.array([embedding], dtype="float32")
         self.index.add(vector)
