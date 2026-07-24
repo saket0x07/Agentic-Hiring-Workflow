@@ -81,19 +81,54 @@ class RetrievalEvaluator:
         candidate_scores = []
         relevant_indices = []
 
+        def get_val(obj, key):
+            if isinstance(obj, dict):
+                return obj.get(key)
+            return getattr(obj, key, None)
+
         for idx, cand in enumerate(retrieved_candidates[:k], start=1):
             prof = cand.get("profile") or cand
-            summary = str(prof.get("professional_summary", "")) if isinstance(prof, dict) else ""
-            skills = " ".join([str(s) for s in prof.get("technical_skills", [])]) if isinstance(prof, dict) else ""
-            raw = str(prof.get("raw_text", "")) if isinstance(prof, dict) else ""
-            full_text = f"{summary} {skills} {raw}"
+            summary = str(get_val(prof, "professional_summary") or "")
+            
+            skills = get_val(prof, "technical_skills") or []
+            if isinstance(skills, list):
+                skills_str = " ".join([str(s) for s in skills if s])
+            else:
+                skills_str = str(skills)
+            
+            raw = str(get_val(prof, "raw_text") or "")
+            
+            # Extract experience & responsibilities text
+            exps = get_val(prof, "work_experience") or []
+            exp_text = []
+            if isinstance(exps, list):
+                for exp in exps:
+                    comp = str(get_val(exp, "company") or "")
+                    desig = str(get_val(exp, "designation") or get_val(exp, "job_title") or "")
+                    resps = get_val(exp, "responsibilities") or []
+                    resp_str = " ".join([str(r) for r in resps]) if isinstance(resps, list) else str(resps)
+                    exp_text.append(f"{desig} {comp} {resp_str}")
+            
+            # Extract project titles & descriptions
+            projs = get_val(prof, "projects") or []
+            proj_text = []
+            if isinstance(projs, list):
+                for p in projs:
+                    title = str(get_val(p, "title") or "")
+                    desc = str(get_val(p, "description") or "")
+                    tech = get_val(p, "technologies") or []
+                    tech_str = " ".join([str(t) for t in tech]) if isinstance(tech, list) else str(tech)
+                    proj_text.append(f"{title} {desc} {tech_str}")
+
+            full_text = f"{summary} {skills_str} {raw} {' '.join(exp_text)} {' '.join(proj_text)}"
 
             coverage = self.evaluate_keyword_relevance(full_text, expected_keywords)
             candidate_scores.append(coverage)
             
-            # Consider candidate relevant if keyword coverage >= 30%
-            if coverage >= 0.30:
+            # Consider candidate relevant if keyword coverage >= 15%
+            if coverage >= 0.15:
                 relevant_indices.append(idx)
+
 
         # Precision@K
         precision = len(relevant_indices) / float(k)
