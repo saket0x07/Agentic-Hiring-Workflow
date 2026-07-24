@@ -177,8 +177,14 @@ def run_full_evaluations():
         f.write(report_content)
 
     logger.info(f"Evaluation report written successfully to {report_path}")
-    print("\n" + report_content)
+    import sys
+if hasattr(sys.stdout, "reconfigure"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
 
 
 if __name__ == "__main__":
     run_full_evaluations()
+

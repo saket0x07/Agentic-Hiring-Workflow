@@ -41,12 +41,14 @@ Return output ONLY as valid JSON in this format:
 }}
 """
         try:
-            raw_res = self.llm_service.call_llm(eval_prompt)
+            import asyncio
+            raw_res = asyncio.run(self.llm_service.generate("You are an expert AI Quality Evaluator.", eval_prompt))
             # Clean JSON markdown if wrapped in ```json ... ```
             cleaned = raw_res.strip()
             if cleaned.startswith("```"):
                 cleaned = cleaned.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
             res = json.loads(cleaned)
+
             return {
                 "faithfulness_score": float(res.get("faithfulness_score", 8.5)),
                 "completeness_score": float(res.get("completeness_score", 8.5)),
@@ -96,8 +98,10 @@ Return output ONLY as valid JSON:
 }}
 """
         try:
-            raw_res = self.llm_service.call_llm(eval_prompt)
+            import asyncio
+            raw_res = asyncio.run(self.llm_service.generate("You are an AI Quality Evaluator for RAG Recruitment Systems.", eval_prompt))
             cleaned = raw_res.strip()
+
             if cleaned.startswith("```"):
                 cleaned = cleaned.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
             res = json.loads(cleaned)
