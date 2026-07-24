@@ -391,7 +391,6 @@ if selected_page == "📋 JD Generator":
                         <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px;">
                             <span style="background: #e5eeff; color: #0525bb; font-weight: 700; font-size: 12px; padding: 4px 14px; border-radius: 8px; border: 1px solid rgba(5, 37, 187, 0.2);">Full-time</span>
                             <span style="background: #e5eeff; color: #0525bb; font-weight: 700; font-size: 12px; padding: 4px 14px; border-radius: 8px; border: 1px solid rgba(5, 37, 187, 0.2);">{job_data.get('budget') or '$160k - $210k'}</span>
-                            <span style="background: #e5eeff; color: #0525bb; font-weight: 700; font-size: 12px; padding: 4px 14px; border-radius: 8px; border: 1px solid rgba(5, 37, 187, 0.2);">Equity: 0.05% - 0.1%</span>
                             <span class="status-badge-chip {status_chip_cls}">{job_status}</span>
                         </div>
                     </div>
@@ -673,19 +672,37 @@ elif selected_page == "📂 Resume Pool":
             
             if uploaded_files:
                 if st.button("🚀 Process & Index Resumes into Pool", type="primary", use_container_width=True):
-                    for uploaded_file in uploaded_files:
-                        with st.spinner(f"Parsing and embedding '{uploaded_file.name}'..."):
-                            try:
-                                files = {"file": (uploaded_file.name, uploaded_file.getvalue(), uploaded_file.type)}
-                                res = requests.post(f"{api_url}/resumes/upload", files=files)
-                                if res.status_code in (200, 201):
-                                    data = res.json()
-                                    st.success(f"Successfully added `{uploaded_file.name}` to Resume Pool!")
-                                    st.rerun()
-                                else:
-                                    st.error(f"Failed to process `{uploaded_file.name}`: {res.text}")
-                            except Exception as e:
-                                st.error(f"Error processing `{uploaded_file.name}`: {e}")
+                    total_files = len(uploaded_files)
+                    success_count = 0
+                    error_count = 0
+                    
+                    progress_bar = st.progress(0.0)
+                    status_placeholder = st.empty()
+                    
+                    for idx, uploaded_file in enumerate(uploaded_files):
+                        status_placeholder.info(f"⏳ Processing resume {idx + 1}/{total_files}: `{uploaded_file.name}`...")
+                        try:
+                            files = {"file": (uploaded_file.name, uploaded_file.getvalue(), uploaded_file.type)}
+                            res = requests.post(f"{api_url}/resumes/upload", files=files)
+                            if res.status_code in (200, 201):
+                                success_count += 1
+                                st.toast(f"✅ Added `{uploaded_file.name}` to pool", icon="✅")
+                            else:
+                                error_count += 1
+                                st.error(f"Failed to process `{uploaded_file.name}`: {res.text}")
+                        except Exception as e:
+                            error_count += 1
+                            st.error(f"Error processing `{uploaded_file.name}`: {e}")
+                        
+                        progress_bar.progress((idx + 1) / total_files)
+                    
+                    status_placeholder.empty()
+                    progress_bar.empty()
+                    
+                    if success_count > 0:
+                        st.success(f"🎉 Successfully processed and indexed {success_count} of {total_files} resume(s) into Resume Pool!")
+                        st.rerun()
+
 
     with col_report:
         with st.container(border=True):

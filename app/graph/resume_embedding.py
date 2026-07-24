@@ -8,7 +8,9 @@ class ResumeEmbeddingNode:
 
     def __call__(self, state: ResumeState):
         if state.candidate_profile:
-            embedding = self.embedding_service.generate_resume_embedding(state.candidate_profile)
-            state.embedding = embedding
+            chunk_embeddings = self.embedding_service.generate_resume_chunk_embeddings(state.candidate_profile)
+            state.chunk_embeddings = chunk_embeddings
+            state.embedding = chunk_embeddings[0]["embedding"] if chunk_embeddings else self.embedding_service.generate_resume_embedding(state.candidate_profile)
             state.status = "EMBEDDED"
         return state
+

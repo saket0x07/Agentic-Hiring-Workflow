@@ -17,4 +17,6 @@ class ResumeState(BaseModel):
     status: str = "UPLOADED"
     error: Optional[str]=None
     embedding: Optional[list[float]]=None
+    chunk_embeddings: Optional[list[dict]]=None
+
 

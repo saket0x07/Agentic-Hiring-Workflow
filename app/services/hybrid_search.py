@@ -144,7 +144,9 @@ class HybridSearchService:
             res_id = v_res["resume_id"]
             vector_ranks[res_id] = {
                 "rank": rank,
-                "score": float(v_res["score"])
+                "score": float(v_res["score"]),
+                "matched_chunk_type": v_res.get("matched_chunk_type", ""),
+                "matched_chunk_text": v_res.get("matched_chunk_text", "")
             }
 
         # 4. Fuse Ranks using Reciprocal Rank Fusion (RRF)
@@ -153,7 +155,12 @@ class HybridSearchService:
             res_id = doc["resume_id"]
             
             b_info = bm25_ranks.get(res_id, {"rank": len(doc_list), "score": 0.0})
-            v_info = vector_ranks.get(res_id, {"rank": len(doc_list), "score": 0.0})
+            v_info = vector_ranks.get(res_id, {
+                "rank": len(doc_list),
+                "score": 0.0,
+                "matched_chunk_type": "",
+                "matched_chunk_text": ""
+            })
 
             # Reciprocal Rank Fusion
             rrf_score = (
@@ -168,6 +175,8 @@ class HybridSearchService:
                 "bm25_score": b_info["score"],
                 "vector_rank": v_info["rank"],
                 "vector_score": v_info["score"],
+                "matched_chunk_type": v_info.get("matched_chunk_type", ""),
+                "matched_chunk_text": v_info.get("matched_chunk_text", ""),
                 # Map vector score to percentage
                 "score": v_info["score"]
             }
@@ -180,3 +189,4 @@ class HybridSearchService:
         )
 
         return sorted_hybrid[:top_k]
+
