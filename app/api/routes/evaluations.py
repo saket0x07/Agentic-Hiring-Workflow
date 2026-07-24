@@ -29,3 +29,20 @@ def get_evaluation_report():
         "report_file": str(report_path),
         "report_markdown": report_md or "Evaluation report not generated yet. Run `python -m scripts.run_evaluations` to build."
     }
+
+
+@router.post("/run")
+def trigger_evaluations():
+    """
+    Triggers automated RAG benchmark evaluation across data/eval_dataset.json test queries.
+    Re-generates data/eval_report.md with updated precision, hit-rate, and MRR metrics.
+    """
+    try:
+        from scripts.run_evaluations import run_full_evaluations
+        run_full_evaluations()
+        return get_evaluation_report()
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to execute evaluation benchmark: {str(e)}"
+        )

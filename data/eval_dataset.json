@@ -2,41 +2,131 @@
     {
         "query_id": "eval_001",
         "job_title": "Senior AI / Machine Learning Engineer",
-        "required_skills": ["Python", "FastAPI", "RAG", "FAISS", "LangChain"],
+        "required_skills": [
+            "Python",
+            "FastAPI",
+            "RAG",
+            "FAISS",
+            "LangChain"
+        ],
         "min_experience_years": 3.0,
         "required_degree": "Bachelor's",
-        "expected_relevant_keywords": ["python", "rag", "faiss", "langchain", "ai", "fastapi"]
+        "expected_relevant_keywords": [
+            "python",
+            "rag",
+            "faiss",
+            "langchain",
+            "ai",
+            "fastapi"
+        ]
     },
     {
         "query_id": "eval_002",
         "job_title": "Full Stack Developer",
-        "required_skills": ["React", "Node.js", "TypeScript", "SQL"],
+        "required_skills": [
+            "React",
+            "Node.js",
+            "TypeScript",
+            "SQL"
+        ],
         "min_experience_years": 2.0,
         "required_degree": "Bachelor's",
-        "expected_relevant_keywords": ["react", "node", "typescript", "fullstack", "javascript"]
+        "expected_relevant_keywords": [
+            "react",
+            "node",
+            "typescript",
+            "fullstack",
+            "javascript"
+        ]
     },
     {
         "query_id": "eval_003",
         "job_title": "Robotics & Embedded Systems Engineer",
-        "required_skills": ["C++", "ROS", "Embedded C", "Robotics"],
+        "required_skills": [
+            "C++",
+            "ROS",
+            "Embedded C",
+            "Robotics"
+        ],
         "min_experience_years": 1.0,
         "required_degree": "Bachelor's",
-        "expected_relevant_keywords": ["ros", "robotics", "c++", "embedded", "microcontroller"]
+        "expected_relevant_keywords": [
+            "ros",
+            "robotics",
+            "c++",
+            "embedded",
+            "microcontroller"
+        ]
     },
     {
         "query_id": "eval_004",
         "job_title": "Lead UI/UX Product Designer",
-        "required_skills": ["Figma", "UI/UX", "Design Systems", "Wireframing", "User Research", "Prototyping"],
+        "required_skills": [
+            "Figma",
+            "UI/UX",
+            "Design Systems",
+            "Wireframing",
+            "User Research",
+            "Prototyping"
+        ],
         "min_experience_years": 2.0,
         "required_degree": "Bachelor's",
-        "expected_relevant_keywords": ["figma", "ui", "ux", "design", "wireframe", "prototype", "user research", "creative"]
+        "expected_relevant_keywords": [
+            "figma",
+            "ui",
+            "ux",
+            "design",
+            "wireframe",
+            "prototype",
+            "user research",
+            "creative"
+        ]
     },
     {
         "query_id": "eval_005",
         "job_title": "Senior Data Scientist & Analytics Lead",
-        "required_skills": ["Python", "Machine Learning", "Pandas", "Scikit-Learn", "PyTorch", "SQL", "Statistics"],
+        "required_skills": [
+            "Python",
+            "Machine Learning",
+            "Pandas",
+            "Scikit-Learn",
+            "PyTorch",
+            "SQL",
+            "Statistics"
+        ],
         "min_experience_years": 3.0,
         "required_degree": "Bachelor's",
-        "expected_relevant_keywords": ["data science", "python", "machine learning", "pandas", "scikit-learn", "pytorch", "sql", "statistics", "data"]
+        "expected_relevant_keywords": [
+            "data science",
+            "python",
+            "machine learning",
+            "pandas",
+            "scikit-learn",
+            "pytorch",
+            "sql",
+            "statistics",
+            "data"
+        ]
+    },
+    {
+        "query_id": "eval_006",
+        "job_title": "AI/ML Fresher",
+        "required_skills": [
+            "Python",
+            "FastAPI",
+            "RAG",
+            "FAISS",
+            "LangChain"
+        ],
+        "min_experience_years": 1.0,
+        "required_degree": "Bachelor's",
+        "expected_relevant_keywords": [
+            "python",
+            "rag",
+            "faiss",
+            "langchain",
+            "ai",
+            "fastapi"
+        ]
     }
 ]

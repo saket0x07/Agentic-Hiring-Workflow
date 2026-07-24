@@ -1,8 +1,8 @@
 # 📊 Agentic Hiring RAG Evaluation Report
 
-**Generated At**: `2026-07-24 09:50:16 UTC`  
+**Generated At**: `2026-07-24 11:59:26 UTC`  
 **Candidate Pool Size**: `41 candidate(s)`  
-**Evaluation Queries**: `5 query test cases`
+**Evaluation Queries**: `6 query test cases`
 
 ---
 
@@ -10,11 +10,11 @@
 
 | Metric | Score | Industry Target | Status |
 | :--- | :---: | :---: | :---: |
-| **Precision@5** | **96.0%** | $> 75.0\%$ | ✅ Excellent |
+| **Precision@5** | **96.7%** | $> 75.0\%$ | ✅ Excellent |
 | **Hit Rate@5** | **100.0%** | $> 85.0\%$ | ✅ Excellent |
 | **Mean Reciprocal Rank (MRR)** | **1.0000** | $> 0.7000$ | ✅ High Rank |
-| **Avg Keyword Relevance Coverage** | **60.4%** | $> 60.0\%$ | ✅ Grounded |
-| **LLM Faithfulness Score** | **100.0%** | $> 85.0\%$ | ✅ Verified |
+| **Avg Keyword Relevance Coverage** | **62.5%** | $> 60.0\%$ | ✅ Grounded |
+| **LLM Faithfulness Score** | **85.0%** | $> 85.0\%$ | ✅ Verified |
 
 
 ---
@@ -28,14 +28,15 @@
 | `eval_003` | **Robotics & Embedded Systems Engineer** | 5 | 100.0% | 100.0% | 1.0000 | 32.0% |
 | `eval_004` | **Lead UI/UX Product Designer** | 5 | 100.0% | 100.0% | 1.0000 | 82.5% |
 | `eval_005` | **Senior Data Scientist & Analytics Lead** | 5 | 100.0% | 100.0% | 1.0000 | 66.7% |
+| `eval_006` | **AI/ML Fresher** | 5 | 100.0% | 100.0% | 1.0000 | 73.3% |
 
 ---
 
 ## 🤖 LLM-as-a-Judge Evaluation Summary
 
-- **Faithfulness Score**: `10.0/10`
-- **Requirement Completeness**: `6.0/10`
-- **Evaluation Reasoning**: The generated JD faithfully lists the requested skills and senior level, with no extraneous or conflicting information. However, it lacks typical JD elements such as responsibilities, location, and other role details, so it is not fully complete.
+- **Faithfulness Score**: `8.5/10`
+- **Requirement Completeness**: `8.5/10`
+- **Evaluation Reasoning**: Heuristic evaluation fallback (LLM response parsing skipped).
 
 ---
 *Report generated automatically by `scripts.run_evaluations` suite.*
