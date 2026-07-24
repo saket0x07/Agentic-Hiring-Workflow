@@ -1,7 +1,15 @@
+import sys
 import json
 import logging
 from pathlib import Path
 from datetime import datetime, timezone
+
+if hasattr(sys.stdout, "reconfigure"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+
 
 from app.evaluators.retrieval_evaluator import RetrievalEvaluator
 from app.evaluators.generation_evaluator import GenerationEvaluator
@@ -177,14 +185,13 @@ def run_full_evaluations():
         f.write(report_content)
 
     logger.info(f"Evaluation report written successfully to {report_path}")
-    import sys
-if hasattr(sys.stdout, "reconfigure"):
     try:
-        sys.stdout.reconfigure(encoding="utf-8")
+        print("\n" + report_content)
     except Exception:
         pass
 
 
 if __name__ == "__main__":
     run_full_evaluations()
+
 
