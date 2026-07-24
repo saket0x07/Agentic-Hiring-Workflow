@@ -22,5 +22,21 @@
         "min_experience_years": 1.0,
         "required_degree": "Bachelor's",
         "expected_relevant_keywords": ["ros", "robotics", "c++", "embedded", "microcontroller"]
+    },
+    {
+        "query_id": "eval_004",
+        "job_title": "Lead UI/UX Product Designer",
+        "required_skills": ["Figma", "UI/UX", "Design Systems", "Wireframing", "User Research", "Prototyping"],
+        "min_experience_years": 2.0,
+        "required_degree": "Bachelor's",
+        "expected_relevant_keywords": ["figma", "ui", "ux", "design", "wireframe", "prototype", "user research", "creative"]
+    },
+    {
+        "query_id": "eval_005",
+        "job_title": "Senior Data Scientist & Analytics Lead",
+        "required_skills": ["Python", "Machine Learning", "Pandas", "Scikit-Learn", "PyTorch", "SQL", "Statistics"],
+        "min_experience_years": 3.0,
+        "required_degree": "Bachelor's",
+        "expected_relevant_keywords": ["data science", "python", "machine learning", "pandas", "scikit-learn", "pytorch", "sql", "statistics", "data"]
     }
 ]
