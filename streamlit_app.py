@@ -1,6 +1,7 @@
 import os
 import json
 import requests
+import textwrap
 import streamlit as st
 
 # Page configuration
@@ -890,6 +891,52 @@ elif selected_page == "🎯 Candidate Fetch":
             padding: 12px;
             text-align: center;
         }
+        .match-justification-card {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-left: 5px solid #0525bb;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(5, 37, 187, 0.04);
+        }
+        .strength-chip-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background-color: #dcfce7;
+            color: #15803d;
+            border: 1px solid #bbf7d0;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 6px;
+            margin-bottom: 6px;
+        }
+        .gap-chip-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background-color: #fef2f2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 6px;
+            margin-bottom: 6px;
+        }
+        .matched-chunk-highlight-box {
+            background: #f0f7ff;
+            border: 1.5px dashed #3b82f6;
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-top: 12px;
+            margin-bottom: 12px;
+        }
     </style>
     """, unsafe_allow_html=True)
 
@@ -1054,8 +1101,34 @@ elif selected_page == "🎯 Candidate Fetch":
                     skills = profile.get("technical_skills", [])
                     summary = profile.get("professional_summary") or "No summary provided."
 
-                    # Candidate Glassmorphic Card HTML
-                    st.markdown(f"""
+                    # Extract or Generate Match Justification & Skill Gaps
+                    justification = cand.get("match_justification") or {}
+                    if not justification:
+                        try:
+                            from app.evaluators.match_justifier import MatchJustifierService
+                            justification = MatchJustifierService().generate_justification(cand, selected_job_obj)
+                        except Exception:
+                            justification = {}
+
+                    just_summary = justification.get("justification_summary") or f"Matched {sim_score:.1f}% on technical qualifications."
+                    strengths = justification.get("matching_strengths") or []
+                    gaps = justification.get("missing_skill_gaps") or []
+
+                    # Build strengths and missing skill gaps HTML blocks cleanly
+                    strengths_html_block = ""
+                    if strengths:
+                        chips = "".join([f'<span class="strength-chip-badge"><span class="material-symbols-outlined" style="font-size:14px;">check_circle</span> {s}</span>' for s in strengths])
+                        strengths_html_block = f'<div style="margin-top: 8px;"><div style="font-size: 11px; font-weight: 700; color: #166534; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px;">Matching Strengths</div><div>{chips}</div></div>'
+
+                    gaps_html_block = ""
+                    if gaps:
+                        chips = "".join([f'<span class="gap-chip-badge"><span class="material-symbols-outlined" style="font-size:14px;">warning</span> {g}</span>' for g in gaps])
+                        gaps_html_block = f'<div style="margin-top: 8px;"><div style="font-size: 11px; font-weight: 700; color: #991b1b; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px;">Missing Skill Gaps</div><div>{chips}</div></div>'
+
+                    matched_chunk_type = cand.get("matched_chunk_type")
+                    matched_chunk_text = cand.get("matched_chunk_text")
+
+                    card_html_content = textwrap.dedent(f"""
                     <div class="glass-card-container">
                         <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
                             <div style="display: flex; align-items: center; gap: 16px; min-width: 220px;">
@@ -1093,8 +1166,18 @@ elif selected_page == "🎯 Candidate Fetch":
                                 </div>
                             </div>
                         </div>
+                        <div class="match-justification-card">
+                            <div style="font-family: Inter; font-weight: 700; font-size: 14px; color: #0b1c30; display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                                <span class="material-symbols-outlined" style="color: #0525bb; font-size: 20px;">auto_awesome</span>
+                                <span>{just_summary}</span>
+                            </div>
+                            {strengths_html_block}
+                            {gaps_html_block}
+                        </div>
                     </div>
-                    """, unsafe_allow_html=True)
+                    """).strip()
+
+                    st.markdown(card_html_content, unsafe_allow_html=True)
 
                     # Collapsible Candidate Details with Stats Grid and JSON view
                     with st.expander(f"🔍 View Full Candidate Details ({name})"):
@@ -1103,16 +1186,25 @@ elif selected_page == "🎯 Candidate Fetch":
                             skills_str = ", ".join(skills) if isinstance(skills, list) else str(skills)
                             st.markdown(f"**Technical Skills:** `{skills_str}`")
 
-                        matched_chunk_type = cand.get("matched_chunk_type")
-                        matched_chunk_text = cand.get("matched_chunk_text")
                         if matched_chunk_text:
                             chunk_label = str(matched_chunk_type).replace("_", " ").title() if matched_chunk_type else "Top Section"
-                            st.markdown(f"🎯 **Top Matching Section ({chunk_label}):**")
-                            st.info(matched_chunk_text)
+                            chunk_html_content = textwrap.dedent(f"""
+                            <div class="matched-chunk-highlight-box">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                    <span style="font-family: Inter; font-weight: 700; font-size: 13px; color: #1e40af; display: flex; align-items: center; gap: 6px;">
+                                        <span class="material-symbols-outlined" style="font-size: 18px;">travel_explore</span> 🎯 Matched Chunk Section ({chunk_label})
+                                    </span>
+                                    <span class="status-badge-chip bg-hybrid-chip">Highest Relevancy Match</span>
+                                </div>
+                                <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #1e293b; white-space: pre-wrap; line-height: 1.5; background: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid #cbd5e1;">
+{matched_chunk_text}
+                                </div>
+                            </div>
+                            """).strip()
+                            st.markdown(chunk_html_content, unsafe_allow_html=True)
 
                         # 4-Metric Grid
-
-                        st.markdown(f"""
+                        grid_html_content = textwrap.dedent(f"""
                         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-top: 14px; margin-bottom: 14px;">
                             <div class="rank-metric-box">
                                 <div style="font-size: 10px; color: #757686; font-weight: 700; text-transform: uppercase;">BM25 Keyword</div>
@@ -1131,7 +1223,9 @@ elif selected_page == "🎯 Candidate Fetch":
                                 <div style="font-size: 13px; font-weight: 700; color: #0b1c30;">{phone}</div>
                             </div>
                         </div>
-                        """, unsafe_allow_html=True)
+                        """).strip()
+
+                        st.markdown(grid_html_content, unsafe_allow_html=True)
 
                         st.markdown("**Parsed Profile JSON Structure:**")
                         st.json(profile)

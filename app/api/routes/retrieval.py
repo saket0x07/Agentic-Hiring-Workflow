@@ -84,6 +84,7 @@ def retrieve_candidates(
             "rerank_score": round(candidate.get("rerank_score", 0.0), 2),
             "matched_chunk_type": candidate.get("matched_chunk_type", ""),
             "matched_chunk_text": candidate.get("matched_chunk_text", ""),
+            "match_justification": candidate.get("match_justification", {}),
             "profile": profile_data
         })
 
