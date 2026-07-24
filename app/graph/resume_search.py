@@ -14,7 +14,8 @@ class ResumeSearchNode:
         candidates = self.hybrid_search_service.search(
             job_description=state.job_description,
             job_embedding=state.job_embedding,
-            top_k=state.top_k
+            top_k=state.top_k,
+            filters=state.filters
         )
         state.retrieved_candidates = candidates
         state.status = "RETRIEVED_HYBRID"

@@ -90,12 +90,70 @@ class HybridSearchService:
         job_embedding: List[float],
         top_k: int = 10,
         bm25_weight: float = 0.5,
-        vector_weight: float = 0.5
+        vector_weight: float = 0.5,
+        filters: Optional[Dict[str, Any]] = None
     ) -> List[Dict[str, Any]]:
         """
-        Execute Hybrid Search (BM25 + FAISS Vector) and fuse ranks via RRF.
+        Execute Hybrid Search (BM25 + FAISS Vector) with optional hard pre-filtering
+        and fuse ranks via RRF.
         """
         all_resumes = self.resume_service.list_resumes()
+        if not all_resumes:
+            return []
+
+        # 0. Apply Hard Metadata Pre-Filtering if filters are active
+        if filters:
+            min_exp = filters.get("min_experience_years")
+            req_deg = filters.get("required_degree")
+
+            target_deg_tier = 0
+            if req_deg:
+                deg_lower = str(req_deg).lower()
+                if any(k in deg_lower for k in ["phd", "doctor"]):
+                    target_deg_tier = 4
+                elif any(k in deg_lower for k in ["master", "ms", "mtech", "mba"]):
+                    target_deg_tier = 3
+                elif any(k in deg_lower for k in ["bachelor", "bs", "btech", "ba", "be"]):
+                    target_deg_tier = 2
+                elif deg_lower not in ["any", "none", ""]:
+                    target_deg_tier = 1
+
+            filtered_resumes = []
+            from app.schemas.candidate_profile import CandidateProfile
+
+            for r in all_resumes:
+                prof_raw = r.get("candidate_profile")
+                profile_data = None
+                if prof_raw:
+                    try:
+                        profile_data = json.loads(prof_raw) if isinstance(prof_raw, str) else prof_raw
+                    except Exception:
+                        profile_data = None
+
+                if not profile_data:
+                    profile_data = {"candidate_name": r.get("candidate_name"), "raw_text": r.get("raw_text")}
+
+                try:
+                    prof_obj = CandidateProfile.model_validate(profile_data) if isinstance(profile_data, dict) else profile_data
+                except Exception:
+                    prof_obj = None
+
+                # Experience Filter
+                if min_exp is not None and float(min_exp) > 0:
+                    cand_exp = prof_obj.get_parsed_experience_years() if prof_obj and hasattr(prof_obj, "get_parsed_experience_years") else 0.0
+                    if cand_exp < float(min_exp):
+                        continue
+
+                # Degree Filter
+                if target_deg_tier > 0:
+                    cand_deg_tier = prof_obj.get_education_tier() if prof_obj and hasattr(prof_obj, "get_education_tier") else 0
+                    if cand_deg_tier < target_deg_tier:
+                        continue
+
+                filtered_resumes.append(r)
+
+            all_resumes = filtered_resumes
+
         if not all_resumes:
             return []
 
@@ -116,6 +174,7 @@ class HybridSearchService:
             tokens = tokenize_text(doc_text)
             doc_list.append({"resume_id": resume_id, "doc_text": doc_text})
             tokenized_corpus.append(tokens)
+
 
         # 2. Run BM25 Keyword Search
         bm25 = BM25Okapi(tokenized_corpus)

@@ -155,3 +155,57 @@ class CandidateProfile(BaseModel):
                     res.append(item)
             return res
         return v
+
+    def get_parsed_experience_years(self) -> float:
+        """Extract numeric total years of experience from profile."""
+        if self.total_experience is not None:
+            try:
+                import re
+                if isinstance(self.total_experience, (int, float)):
+                    return float(self.total_experience)
+                matches = re.findall(r"[-+]?\d*\.\d+|\d+", str(self.total_experience))
+                if matches:
+                    return float(matches[0])
+            except Exception:
+                pass
+        
+        # Fallback: estimate from work_experience count
+        if self.work_experience:
+            return float(len(self.work_experience) * 1.5)
+        return 0.0
+
+    def get_education_tier(self) -> int:
+        """
+        Determine highest education tier:
+        0: None/Unknown
+        1: Diploma / High School
+        2: Bachelor's
+        3: Master's
+        4: Doctorate / PhD
+        """
+        if not self.education:
+            return 0
+
+        max_tier = 0
+        phd_keywords = ["phd", "doctor", "doctorate", "ph.d"]
+        master_keywords = ["master", "m.tech", "mtech", "ms", "ma", "m.e", "me", "m.sc", "msc", "mba", "postgraduate", "pg"]
+        bachelor_keywords = ["bachelor", "b.tech", "btech", "bs", "ba", "b.e", "be", "b.sc", "bsc", "undergraduate", "degree", "b.a", "b.s"]
+
+        for edu in self.education:
+            degree_str = ""
+            if isinstance(edu, Education):
+                degree_str = str(edu.degree or "").lower() + " " + str(edu.specialization or "").lower()
+            elif isinstance(edu, dict):
+                degree_str = str(edu.get("degree", "")).lower() + " " + str(edu.get("specialization", "")).lower()
+            
+            if any(k in degree_str for k in phd_keywords):
+                max_tier = max(max_tier, 4)
+            elif any(k in degree_str for k in master_keywords):
+                max_tier = max(max_tier, 3)
+            elif any(k in degree_str for k in bachelor_keywords):
+                max_tier = max(max_tier, 2)
+            elif degree_str.strip():
+                max_tier = max(max_tier, 1)
+
+        return max_tier
+

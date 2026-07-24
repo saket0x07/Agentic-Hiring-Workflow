@@ -942,6 +942,31 @@ elif selected_page == "🎯 Candidate Fetch":
 
             top_k_val = st.slider("Top Candidates (K)", min_value=1, max_value=20, value=5, help="Number of top candidate matches to return")
 
+            st.markdown("""
+            <div style="font-family: Inter; font-weight: 700; font-size: 14px; color: #0b1c30; margin-top: 14px; margin-bottom: 6px;">
+                🎚️ Hard Constraint Filters
+            </div>
+            """, unsafe_allow_html=True)
+            col_f1, col_f2 = st.columns(2)
+            with col_f1:
+                min_exp_val = st.number_input(
+                    "Min Experience (Years)",
+                    min_value=0.0,
+                    max_value=25.0,
+                    value=0.0,
+                    step=1.0,
+                    key="filter_min_exp",
+                    help="Exclude candidates with fewer total experience years"
+                )
+            with col_f2:
+                req_deg_val = st.selectbox(
+                    "Min Education Level",
+                    options=["Any", "Bachelor's", "Master's", "Doctorate / PhD"],
+                    index=0,
+                    key="filter_req_degree",
+                    help="Exclude candidates below this education degree tier"
+                )
+
             status_chip = "bg-approved-chip" if job_status == "APPROVED" else "bg-pending-chip"
             st.markdown(f"""
             <div style="font-size: 13px; color: #444655; margin-top: 6px;">
@@ -957,7 +982,7 @@ elif selected_page == "🎯 Candidate Fetch":
                     <span class="material-symbols-outlined" style="font-size: 24px;">bolt</span> Execute Hybrid Search Pipeline
                 </div>
                 <div style="font-size: 12px; color: #757686; margin-top: 4px;">
-                    BM25 Keywords + FAISS Vector + RRF + Cross-Encoder Reranker
+                    Hard Pre-Filters + BM25 Keywords + FAISS Vector + RRF + Cross-Encoder Reranker
                 </div>
             </div>
             """, unsafe_allow_html=True)
@@ -971,9 +996,14 @@ elif selected_page == "🎯 Candidate Fetch":
             if not target_job_id:
                 st.error("Please select a valid Job Description!")
             else:
-                with st.spinner(f"Executing Hybrid BM25 + FAISS Vector Search & Reranking for '{selected_jd_name}'..."):
+                with st.spinner(f"Executing Pre-Filtering + Hybrid BM25 & FAISS Vector Search for '{selected_jd_name}'..."):
                     try:
-                        res = requests.post(f"{api_url}/retrieval/{target_job_id}?top_k={top_k_val}")
+                        req_payload = {
+                            "top_k": top_k_val,
+                            "min_experience_years": float(min_exp_val) if min_exp_val > 0 else None,
+                            "required_degree": req_deg_val if req_deg_val != "Any" else None
+                        }
+                        res = requests.post(f"{api_url}/retrieval/{target_job_id}", json=req_payload)
                         if res.status_code == 200:
                             retrieval_data = res.json()
                             st.session_state["active_retrieval_results"] = retrieval_data
@@ -981,6 +1011,7 @@ elif selected_page == "🎯 Candidate Fetch":
                             st.error(f"Candidate Fetch Error ({res.status_code}): {res.text}")
                     except Exception as e:
                         st.error(f"Failed to connect to candidate retrieval endpoint: {e}")
+
 
         # Display Candidate Results Cards
         if "active_retrieval_results" in st.session_state and st.session_state["active_retrieval_results"]:

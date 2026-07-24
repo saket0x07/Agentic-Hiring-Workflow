@@ -12,6 +12,7 @@ class RetrievalState(BaseModel):
     job_embedding: Optional[list[float]]=None
     retrieved_candidates: list[dict]=[]    
     candidate_profiles: list[dict]=[]
-    top_k: int=5
+    filters: Optional[dict] = None
     status: str="START"
     error: Optional[str]=None
+
