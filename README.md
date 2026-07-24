@@ -16,13 +16,14 @@ This system automates the entire recruiting lifecycle—from AI-driven Job Descr
 
 * **🤖 Agentic Job Description Generator**: Creates tailored, structured JDs from high-level recruiter prompts using LLMs. Features an interactive review workspace with PDF export and human-in-the-loop revision loops.
 * **📄 Multi-Format Resume Ingestion**: Parses candidate resumes (`PDF`, `DOCX`, `TXT`) into structured JSON profiles (skills, experience, contact, education, summary) via LLM parsing chains.
-* **🔍 Hybrid Search Engine (BM25 + Dense FAISS Vectors)**:
+* **🧩 Section-Level Resume Chunking**: Automatically breaks parsed resumes into logical section chunks (Summary, Technical & Soft Skills, Work Experience entries, Project entries, Education, Certifications) to generate fine-grained 768-dim embeddings using `BAAI/bge-base-en-v1.5`, preventing token truncation and context dilution.
+* **🔍 Hybrid Search Engine (BM25 + Dense FAISS Chunks)**:
   * **BM25 Lexical Search**: Keyword precision across tech stack and candidate text.
-  * **768-dim Dense Vectors**: Conceptual semantic embedding using `BAAI/bge-base-en-v1.5`.
-* **⚡ Reciprocal Rank Fusion (RRF)**: Merges sparse BM25 ranks and dense FAISS vector ranks into a unified candidate pool.
+  * **768-dim Dense Chunk Vectors**: Section-level semantic embedding with **MaxSim (Maximum Chunk Similarity)** score aggregation per candidate.
+* **⚡ Reciprocal Rank Fusion (RRF)**: Merges sparse BM25 ranks and dense FAISS chunk vectors into a unified candidate pool.
 * **🏆 Cross-Encoder Re-Ranking**: Employs `cross-encoder/ms-marco-MiniLM-L-6-v2` for deep query-document cross-attention score optimization.
-* **🗑️ Dual-Store 1-Click Purge**: Automatically cleans candidate records from both the relational SQLite store (`hiring.db`) and FAISS flat vector index simultaneously with vector index reconstruction.
-* **🎨 State-of-the-Art Streamlit UI**: Designed with Google Fonts (`Inter` & `JetBrains Mono`), glassmorphism cards, micro-animations, progress bars, and high-contrast color palettes (`#0525bb`, `#0b1c30`, `#ffffff`).
+* **🔄 Re-Indexing Utility**: Includes a built-in CLI tool (`python -m scripts.reindex_resumes`) to batch re-index existing database candidate profiles into section chunk vectors.
+* **🎨 State-of-the-Art Streamlit UI**: Multi-file batch resume uploader with real-time progress indicators, glassmorphism cards, micro-animations, and high-contrast color palettes (`#0525bb`, `#0b1c30`, `#ffffff`).
 
 ---
 
@@ -76,15 +77,15 @@ flowchart TD
 - **PDF Compilation**: Uses HTML/CSS Jinja templates rendered into print-ready PDF documents using WeasyPrint.
 - **Feedback & Rejection Loop**: Recruiters can provide explicit feedback notes (e.g. *"Focus more on Kubernetes and DevOps"*), triggering the LLM agent to revise and regenerate the JD while tracking revision history.
 
-### Module 2: Resume Ingestion & Dual-Store Indexing
-- **Multi-File Extraction**: Supports `.pdf`, `.docx`, and `.txt` uploads. Extracts raw text via `PyPDF` and `python-docx`.
+### Module 2: Resume Ingestion & Section-Level Vector Chunking
+- **Multi-File Extraction**: Supports batch `.pdf`, `.docx`, and `.txt` uploads with real-time UI progress bars. Extracts raw text via `PyPDF` and `python-docx`.
 - **Structured LLM Parser**: Converts unstructured resume text into a strict JSON schema containing candidate name, contact info, professional summary, technical skills list, work experience, and project highlights.
-- **Dense Vector Embedding**: Embeds candidate profiles into 768-dimensional vectors using `BAAI/bge-base-en-v1.5`.
-- **Atomic Deletion**: Deleting a candidate purges SQLite records and reconstructs FAISS vectors from remaining mappings to maintain index integrity.
+- **Section-Level Chunking & Embedding**: Embeds discrete candidate sections (Summary, Skills, individual Experience entries, Project entries, Education, Certifications) as separate 768-dimensional vectors using `BAAI/bge-base-en-v1.5`.
+- **Atomic Deletion**: Deleting a candidate purges SQLite records and removes all corresponding section chunk vectors from FAISS to maintain index integrity.
 
 ### Module 3: Hybrid Retrieval & Cross-Encoder Re-Ranking
 - **Step 1 — BM25 Sparse Search**: Tokenizes the approved JD requirements and computes BM25 relevance scores over the candidate pool.
-- **Step 2 — FAISS Dense Vector Search**: Computes cosine similarity between JD embeddings and candidate profile embeddings.
+- **Step 2 — FAISS Dense Chunk Vector Search (MaxSim)**: Computes similarity between JD embeddings and candidate section chunk vectors in FAISS, aggregating candidate scores using **MaxSim (Maximum Chunk Similarity)**.
 - **Step 3 — Reciprocal Rank Fusion (RRF)**: Combines sparse and dense ranks using the standard RRF formula:
   $$RRF(c) = \sum_{m \in M} \frac{1}{k + r_m(c)}$$
 - **Step 4 — Cross-Encoder Re-Ranking**: Passes candidate text pairs through `cross-encoder/ms-marco-MiniLM-L-6-v2` to obtain deep semantic alignment scores, ensuring high-precision top-$K$ candidate rankings.
@@ -167,6 +168,17 @@ Open your browser at `http://localhost:8501`.
 
 ---
 
+## 🔄 Re-Indexing Existing Resumes
+
+If you update embedding models or need to re-generate section chunk vectors for candidates already stored in SQLite (`hiring.db`), run the automated CLI re-indexing tool:
+
+```bash
+python -m scripts.reindex_resumes
+```
+This script automatically clears the existing FAISS index, reads candidate profiles from SQLite, generates fresh 768-dim section chunk vectors, and updates `resume_mapping.json`.
+
+---
+
 ## 📡 API Endpoint Reference
 
 | Method | Endpoint                 | Description                                                   |
@@ -204,6 +216,8 @@ Agentic-Hiring-Workflow/
 │   ├── resumes/              # Stored resume raw files
 │   └── vector_store/         # FAISS Index & mapping JSON files
 ├── database/                 # SQLite database file (hiring.db)
+├── scripts/
+│   └── reindex_resumes.py    # CLI script for re-indexing database resumes into section chunk vectors
 ├── streamlit_app.py          # Modern Streamlit Dashboard App
 ├── requirements.txt          # Python dependencies
 ├── .env.example              # Environment variables template
