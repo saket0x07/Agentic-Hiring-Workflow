@@ -82,8 +82,11 @@ def retrieve_candidates(
             "bm25_rank": candidate.get("bm25_rank", 0),
             "vector_rank": candidate.get("vector_rank", 0),
             "rerank_score": round(candidate.get("rerank_score", 0.0), 2),
+            "matched_chunk_type": candidate.get("matched_chunk_type", ""),
+            "matched_chunk_text": candidate.get("matched_chunk_text", ""),
             "profile": profile_data
         })
+
 
     return {
         "job_id": job_id,

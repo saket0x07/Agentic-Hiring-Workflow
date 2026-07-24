@@ -1103,7 +1103,15 @@ elif selected_page == "🎯 Candidate Fetch":
                             skills_str = ", ".join(skills) if isinstance(skills, list) else str(skills)
                             st.markdown(f"**Technical Skills:** `{skills_str}`")
 
+                        matched_chunk_type = cand.get("matched_chunk_type")
+                        matched_chunk_text = cand.get("matched_chunk_text")
+                        if matched_chunk_text:
+                            chunk_label = str(matched_chunk_type).replace("_", " ").title() if matched_chunk_type else "Top Section"
+                            st.markdown(f"🎯 **Top Matching Section ({chunk_label}):**")
+                            st.info(matched_chunk_text)
+
                         # 4-Metric Grid
+
                         st.markdown(f"""
                         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-top: 14px; margin-bottom: 14px;">
                             <div class="rank-metric-box">

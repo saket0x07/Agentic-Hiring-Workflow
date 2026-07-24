@@ -19,8 +19,11 @@ class FetchCandidatesNodes:
                         "bm25_score": candidate.get("bm25_score", 0.0),
                         "bm25_rank": candidate.get("bm25_rank", 0),
                         "vector_rank": candidate.get("vector_rank", 0),
+                        "matched_chunk_type": candidate.get("matched_chunk_type", ""),
+                        "matched_chunk_text": candidate.get("matched_chunk_text", ""),
                         "profile": profile
                     })
+
         
         state.candidate_profiles = profiles
         state.status = "PROFILE_FETCHED"

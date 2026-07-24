@@ -1,0 +1,26 @@
+[
+    {
+        "query_id": "eval_001",
+        "job_title": "Senior AI / Machine Learning Engineer",
+        "required_skills": ["Python", "FastAPI", "RAG", "FAISS", "LangChain"],
+        "min_experience_years": 3.0,
+        "required_degree": "Bachelor's",
+        "expected_relevant_keywords": ["python", "rag", "faiss", "langchain", "ai", "fastapi"]
+    },
+    {
+        "query_id": "eval_002",
+        "job_title": "Full Stack Developer",
+        "required_skills": ["React", "Node.js", "TypeScript", "SQL"],
+        "min_experience_years": 2.0,
+        "required_degree": "Bachelor's",
+        "expected_relevant_keywords": ["react", "node", "typescript", "fullstack", "javascript"]
+    },
+    {
+        "query_id": "eval_003",
+        "job_title": "Robotics & Embedded Systems Engineer",
+        "required_skills": ["C++", "ROS", "Embedded C", "Robotics"],
+        "min_experience_years": 1.0,
+        "required_degree": "Bachelor's",
+        "expected_relevant_keywords": ["ros", "robotics", "c++", "embedded", "microcontroller"]
+    }
+]
